@@ -3,6 +3,9 @@
 # setting up the user input
 
 # Defining the user options
+
+import conferenceDB
+
 def display_menu():
    print ("Conference Management")
    print("----------------------------")
@@ -22,9 +25,8 @@ def get_name(n):
    return name
 
 def schedule():
-    if (choice == "1"):
-        session = appdbproj.get_session()
-        print(session)
+      session = appdbproj.get_session()
+      print(session)
 
 
 def main():

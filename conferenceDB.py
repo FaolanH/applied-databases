@@ -13,7 +13,7 @@ def get_session(number):
     else:
         print("Already connected")
 
-    query = "SELECT * FROM session
+    query = "SELECT * FROM session"
 
     with conn:
         cursor = conn.cursor()
