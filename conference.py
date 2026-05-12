@@ -1,6 +1,5 @@
 import conferenceDB
 
-
 def main():
     while True:
       display_menu()
@@ -11,6 +10,9 @@ def main():
       elif (choice == "1"):
           speaker_name = input("Enter speaker name or title: ")
           conference_sessions(speaker_name)
+      elif (choice == "2"):
+          company_ID = input("Enter the company ID of the attendee: ")
+          attendee_company(company_ID)   
 
 def display_menu():
    print ("\n-------------------------------------------------------------------------------")
@@ -27,8 +29,6 @@ def display_menu():
    print("6 - View Rooms")
    print("x - Exit Application")
    
-
-
 def conference_sessions(speaker_name):
     
     sessions = conferenceDB.get_session(speaker_name)
@@ -40,7 +40,8 @@ def conference_sessions(speaker_name):
     print("\nSESSION LIST OF SPECIFIED SPEAKERS")
     print("============")
     for s in sessions:
-        print(f"{s['speakerName']:20} |{s['sessionTitle']:30} | Room {s['roomID']}")
+        print(f"{s['speakerName']:20} |{s['sessionTitle']:30} | Room {s['roomName']}")
+  
 
 if __name__ == "__main__":
-   main()
+    main()
