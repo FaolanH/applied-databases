@@ -12,7 +12,7 @@ def main():
           conference_sessions(speaker_name)
       elif (choice == "2"):
           company_ID = input("Enter the company ID of the attendee: ")
-          attendee_company(company_ID)   
+          attendee_details(company_ID)   
 
 def display_menu():
    print ("\n-------------------------------------------------------------------------------")
@@ -40,7 +40,20 @@ def conference_sessions(speaker_name):
     print("\nSESSION LIST OF SPECIFIED SPEAKERS")
     print("============")
     for s in sessions:
-        print(f"{s['speakerName']:20} |{s['sessionTitle']:30} | Room {s['roomName']}")
+        print(f"{s['speakerName']:^20} |{s['sessionTitle']:^30} | Room {s['roomName']}")
+
+def attendee_details(company_ID):
+    
+    details = conferenceDB.get_details(company_ID)
+    
+    if not details:
+        print("\n Invalid company ID, please try again:", company_ID)
+        return
+        
+    print("\nATTENDEE DETAILS")
+    print("============")
+    for d in details:
+        print(f"{d['attendeeName']:^20} |{d['attendeeDOB']} |{d['sessionTitle']:^40} |{d['speakerName']:^20}| Room {d['roomName']:^15} |{d['sessionDate']}")        
   
 
 if __name__ == "__main__":
