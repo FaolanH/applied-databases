@@ -1,14 +1,7 @@
-#author: Faolán Hamilton
-
-# setting up the user input
-
-# Defining the user options
-
 import conferenceDB
 
 
 def main():
-    speaker_name = "Enter speaker name: "
     while True:
       display_menu()
       choice = input("Please input your choice: ")
@@ -16,9 +9,11 @@ def main():
       if (choice =="x"):
          break
       elif (choice == "1"):
-         conference_sessions()
+          speaker_name = input("Enter speaker name or title: ")
+          conference_sessions(speaker_name)
 
 def display_menu():
+   print ("\n-------------------------------------------------------------------------------")
    print ("Conference Management")
    print("----------------------------")
    print("")
@@ -31,17 +26,21 @@ def display_menu():
    print("5 - Add Attendee Connection")
    print("6 - View Rooms")
    print("x - Exit Application")
+   
 
-def get_name(n):
-   name = input(n) 
-   return name
 
-def conference_sessions():
-    sessions = conferenceDB.get_session()
-    print("\nSESSION LIST")
+def conference_sessions(speaker_name):
+    
+    sessions = conferenceDB.get_session(speaker_name)
+    
+    if not sessions:
+        print("\n No speakers found matching:", speaker_name)
+        return
+        
+    print("\nSESSION LIST OF SPECIFIED SPEAKERS")
     print("============")
     for s in sessions:
-        print(f"{s['sessionID']:3} | {s['sessionTitle']:30} | {s['speakerName']:20} | {s['sessionDate']} | Room {s['roomID']}")
+        print(f"{s['speakerName']:20} |{s['sessionTitle']:30} | Room {s['roomID']}")
 
 if __name__ == "__main__":
    main()
