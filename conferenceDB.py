@@ -1,8 +1,24 @@
 import pymysql
+from neo4j import GraphDatabase
 
 conn = None
 
-def connect():
+driver = None
+
+def connect_neo4j():
+    global driver
+    uri = "neo4j://localhost:7687"
+    driver = GraphDatabase.driver(uri, auth=("neo4j", "neo4j"), max_connection_lifetime=1000)
+
+#def get_attendee_relationships(tx):
+    #query = 
+
+def main():
+    connect_neo4j()
+    with driver.period() as period:
+        values = period.read_transaction(get_attendee_relationships, "RETURN 1 AS x")
+
+def connect_db():
     global conn
     conn = pymysql.connect(
         host="localhost",
@@ -15,14 +31,36 @@ def connect():
 def get_session(speaker_name):
     global conn
     if conn is None:
-        connect()
+        connect_db()
 
     query = """
-    SELECT speakerName, sessionTitle, roomID
-    FROM session 
-    WHERE speakerName LIKE %s
+    SELECT 
+        s.speakerName,
+        s.sessionTitle,
+        s.roomID,
+        r.roomName
+    FROM session AS s
+    JOIN room AS r
+        ON s.roomID = r.roomID
+    WHERE s.speakerName LIKE %s;
 """
+
     cursor = conn.cursor()
     cursor.execute(query, ("%" + speaker_name + "%",))
+    rows = cursor.fetchall()
+    return rows
+
+def attendee_details(company_ID):
+    global conn
+    if conn is None:
+        connect_db()
+
+    query = """
+    SELECT attendeeName, attendeeDOB
+    FROM attendee 
+    WHERE attendeeCompanyID LIKE %s
+"""
+    cursor = conn.cursor()
+    cursor.execute(query, ("%" + company_ID + "%",))
     rows = cursor.fetchall()
     return rows
