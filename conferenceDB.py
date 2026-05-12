@@ -12,13 +12,17 @@ def connect():
         cursorclass=pymysql.cursors.DictCursor
     )
 
-def get_session():
+def get_session(speaker_name):
     global conn
     if conn is None:
         connect()
 
-    query = "SELECT * FROM session"
+    query = """
+    SELECT speakerName, sessionTitle, roomID
+    FROM session 
+    WHERE speakerName LIKE %s
+"""
     cursor = conn.cursor()
-    cursor.execute(query)
+    cursor.execute(query, ("%" + speaker_name + "%",))
     rows = cursor.fetchall()
     return rows
