@@ -6,6 +6,18 @@
 
 import conferenceDB
 
+
+def main():
+    speaker_name = "Enter speaker name: "
+    while True:
+      display_menu()
+      choice = input("Please input your choice: ")
+      
+      if (choice =="x"):
+         break
+      elif (choice == "1"):
+         conference_sessions()
+
 def display_menu():
    print ("Conference Management")
    print("----------------------------")
@@ -24,21 +36,12 @@ def get_name(n):
    name = input(n) 
    return name
 
-def schedule():
-      session = appdbproj.get_session()
-      print(session)
-
-
-def main():
-    speaker_name = "Enter speaker name: "
-    while True:
-      display_menu()
-      choice = input("Please input your choice: ")
-      
-      if (choice =="x"):
-         break
-      elif (choice == "1"):
-         return schedule
+def conference_sessions():
+    sessions = conferenceDB.get_session()
+    print("\nSESSION LIST")
+    print("============")
+    for s in sessions:
+        print(f"{s['sessionID']:3} | {s['sessionTitle']:30} | {s['speakerName']:20} | {s['sessionDate']} | Room {s['roomID']}")
 
 if __name__ == "__main__":
    main()
