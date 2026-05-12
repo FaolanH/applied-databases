@@ -50,16 +50,28 @@ def get_session(speaker_name):
     rows = cursor.fetchall()
     return rows
 
-def attendee_details(company_ID):
+def get_details(company_ID):
     global conn
     if conn is None:
         connect_db()
 
     query = """
-    SELECT attendeeName, attendeeDOB
-    FROM attendee 
-    WHERE attendeeCompanyID LIKE %s
+   SELECT 
+    a.attendeeName,
+    a.attendeeDOB,
+    s.sessionTitle,
+    s.speakerName,
+    r.roomName,
+    s.sessionDate
+FROM attendee a
+JOIN company c          ON a.attendeeCompanyID = c.companyID
+JOIN registration re    ON re.attendeeID = a.attendeeID
+JOIN session s          ON s.sessionID = re.sessionID
+JOIN room r             ON r.roomID = s.roomID
+WHERE a.attendeeCompanyID LIKE %s;
 """
+
+
     cursor = conn.cursor()
     cursor.execute(query, ("%" + company_ID + "%",))
     rows = cursor.fetchall()
