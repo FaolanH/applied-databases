@@ -4,19 +4,21 @@ conn = None
 
 def connect():
     global conn
-    conn = pymysql.connect(host="localhost", user="root", password="root", db="appdbproj", cursorclass=pymysql.cursors.DictCursor)
+    conn = pymysql.connect(
+        host="localhost",
+        user="root",
+        password="root",
+        db="appdbproj",
+        cursorclass=pymysql.cursors.DictCursor
+    )
 
-def get_session(number):
-    if(not conn):
-        print("No connection")
-        connect();
-    else:
-        print("Already connected")
+def get_session():
+    global conn
+    if conn is None:
+        connect()
 
     query = "SELECT * FROM session"
-
-    with conn:
-        cursor = conn.cursor()
-        cursor.execute(query, (number))
-        x = cursor.fetchall()
-        print(x)
+    cursor = conn.cursor()
+    cursor.execute(query)
+    rows = cursor.fetchall()
+    return rows
