@@ -7,8 +7,16 @@ driver = None
 
 def connect_neo4j():
     global driver
-    uri = "neo4j://localhost:7687"
-    driver = GraphDatabase.driver(uri, auth=("neo4j", "neo4j"), max_connection_lifetime=1000)
+    uri = "bolt://localhost:7687"
+    driver = GraphDatabase.driver(
+    "bolt://localhost:7687",
+    auth=("neo4j", "test1234"),
+    database="attendeeNetwork"
+    )
+
+
+
+)
 
 #def get_attendee_relationships(tx):
     #query = 
@@ -119,4 +127,34 @@ def insert_attendee(attendee_ID, attendee_name, dob_date, attendee_Gender, atten
     cursor = conn.cursor()
     cursor.execute(query, (attendee_ID, attendee_name, dob_date, attendee_Gender, attendee_CompanyID))
     conn.commit()
-    
+
+
+# Choice 4 - 
+
+def get_attendee_connections(attendee_ID):
+    global driver
+    if driver is None:
+        connect_neo4j()
+
+    query = """
+    MATCH (a:Attendee {AttendeeID: $id})-[:CONNECTED_TO]->(b:Attendee)
+    RETURN b.AttendeeID AS connectedID
+    """
+
+    with driver.session() as session:
+        results = session.run(query, id=attendee_ID)
+        return [record["connectedID"] for record in results]
+
+def get_attendee_name(attendee_ID):
+    global conn
+    if conn is None:
+        connect_db()
+
+    query = "SELECT attendeeName FROM attendee WHERE attendeeID = %s"
+    cursor = conn.cursor()
+    cursor.execute(query, (attendee_ID,))
+    row = cursor.fetchone()
+
+    return row["attendeeName"] if row else None
+
+
