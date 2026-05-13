@@ -137,8 +137,9 @@ def get_attendee_connections(attendee_ID):
     RETURN b.attendeeID AS connectedID
     """
 
+
     with driver.session() as session:
-        results = session.run(query, id=attendee_ID)
+        results = session.run(query, id=str(attendee_ID))
         return [record["connectedID"] for record in results]
 
 def get_attendee_name(attendee_ID):
