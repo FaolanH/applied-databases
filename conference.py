@@ -31,7 +31,12 @@ def main():
         if attendee_ID.isdigit():
             view_connections(int(attendee_ID))
         else:
-            print("Invalid ID - please try again")     
+            print("Invalid ID - please try again")
+      # Choice 6 - View Rooms
+      elif (choice == "6"):
+            print("These are the rooms where the sessions will be on: ")
+            
+            rooms()
 
 # Overall Display Menu - what the user sees 
 def display_menu():
@@ -181,6 +186,17 @@ def view_connections(attendee_ID):
         name = conferenceDB.get_attendee_name(cid)
         print(f"{cid:<10} | {name}")
 
-
+# Choice 6 - View Rooms function
+def rooms(): 
+# this links to queries into the database     
+    rooms = conferenceDB.view_rooms()
+    
+        # returns list of session based on the user input (dr will return all session where the speaker is a dr.)    
+    print("\nList of Rooms")
+    print("============")
+    for r in rooms:
+        print(f"ID: {r['roomID']} | {r['roomName']} | Capacity: {r['capacity']}")
+    
+    
 if __name__ == "__main__":
     main()
