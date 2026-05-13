@@ -27,7 +27,7 @@ def connect_db():
         db="appdbproj",
         cursorclass=pymysql.cursors.DictCursor
     )
-
+#  Choice 1 - View Speakers and Sessions    
 def get_session(speaker_name):
     global conn
     if conn is None:
@@ -50,6 +50,7 @@ def get_session(speaker_name):
     rows = cursor.fetchall()
     return rows
 
+# Choice 2 - View Attendees by Company
 def get_details(company_ID):
     
    
@@ -90,7 +91,7 @@ WHERE a.attendeeCompanyID LIKE %s;
     rows = cursor.fetchall()
     return companyName, rows
     
-   
+# Choice 3  - Add New Attendee (ensuring attendee does not already exist)    
 def get_attendees(attendee_ID):
     global conn
     if conn is None:
@@ -104,7 +105,7 @@ def get_attendees(attendee_ID):
     row = cursor.fetchone()
     return row is not None 
     
-    
+# Choice 3  - Add New Attendee to Database   
 def insert_attendee(attendee_ID, attendee_name, dob_date, attendee_Gender, attendee_CompanyID):
     global conn
     if conn is None:
