@@ -54,6 +54,16 @@ def get_details(company_ID):
     global conn
     if conn is None:
         connect_db()
+        
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT companyName FROM company WHERE companyID = %s", (company_ID,))
+    company = cursor.fetchone()
+
+    if not company:
+        return None, None   # company does not exist
+
+    companyName = company['companyName']
 
     query = """
    SELECT 
@@ -62,7 +72,8 @@ def get_details(company_ID):
     s.sessionTitle,
     s.speakerName,
     r.roomName,
-    s.sessionDate
+    s.sessionDate, 
+    c.companyName
 FROM attendee a
 JOIN company c          ON a.attendeeCompanyID = c.companyID
 JOIN registration re    ON re.attendeeID = a.attendeeID
@@ -75,4 +86,4 @@ WHERE a.attendeeCompanyID LIKE %s;
     cursor = conn.cursor()
     cursor.execute(query, ("%" + company_ID + "%",))
     rows = cursor.fetchall()
-    return rows
+    return companyName, rows
