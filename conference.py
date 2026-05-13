@@ -9,7 +9,7 @@ def main():
       display_menu()
       choice = input("Please input your choice: ")
       
-      # escape from the loop
+      # End the loop
       if (choice =="x"):
          break
       # Choice 1 - View Speakers and Sessions  
@@ -26,16 +26,21 @@ def main():
       elif (choice == "3"):
             new_record = print("Please fill in the new attendee details below: ")
             new_attendee()
+      # Choice 4 - View Connected Attendees     
       elif (choice == "4"):
         attendee_ID = input("Please enter attendee ID to view connections: ")
         if attendee_ID.isdigit():
             view_connections(int(attendee_ID))
         else:
             print("Invalid ID - please try again")
+      # Choice 5 - Add Attendee Connection     
+      elif (choice == "5"):
+           new_connection = print("Please detail new attendee connections below: ")
+           attendee_connection()
+           
       # Choice 6 - View Rooms
       elif (choice == "6"):
             print("These are the rooms where the sessions will be on: ")
-            
             rooms()
 
 # Overall Display Menu - what the user sees 
@@ -53,6 +58,7 @@ def display_menu():
    print("5 - Add Attendee Connection")
    print("6 - View Rooms")
    print("x - Exit Application")
+   print("----------------------------")
 
 # Choice 1 - View Speakers and Sessions function
 def conference_sessions(speaker_name): 
@@ -169,7 +175,8 @@ def new_attendee():
     )
 
     print("\nNew attendee added successfully.")
- #Choice 4 - View Connected Attendees
+
+#Choice 4 - View Connected Attendees
 def view_connections(attendee_ID):
     connections = conferenceDB.get_attendee_connections(attendee_ID)
 
@@ -184,8 +191,49 @@ def view_connections(attendee_ID):
 
     for cid in connections:
         name = conferenceDB.get_attendee_name(cid)
-        print(f"{cid:<10} | {name}")
+        print(f"{cid:<10} | {name}")        
 
+# Choice 5 - Add Attendee Connection
+def attendee_connection():
+# setting the attendee 1 ID
+    while True:
+        try:
+            attendee_1_ID = input("Please enter the first attendee ID you would like to connect: ")
+            if not attendee_1_ID.isdigit() or len(attendee_1_ID) != 3:
+                print("Error: Attendee ID must be a 3‑digit number, please try again")
+                return
+        except ValueError:
+            print("ID must be a number.")
+            continue
+
+        # checking if the ID is already connected
+        if conferenceDB.show_attendee_connections(attendee_1_ID):
+            print("That attendee ID is already connected. Try again.")
+            continue
+        break
+        
+        # setting the attendee 2 ID
+    while True:
+        try:
+            attendee_2_ID = input("Please enter the second attendee ID you would like to connect: ")
+            if not attendee_2_ID.isdigit() or len(attendee_2_ID) != 3:
+                print("Error: Attendee ID must be a 3‑digit number, please try again")
+                return
+
+        except ValueError:
+            print("ID must be a number.")
+            continue
+        
+        # checking if the ID is already connected
+        if conferenceDB.show_attendee_connections(attendee_2_ID):
+            print("That attendee ID is already connected. Try again.")
+            continue
+        break
+        
+    if attendee_1_ID == attendee_2_ID:
+        print ("*** ERROR *** An attendee cannot be connected to themselves")
+        
+        
 # Choice 6 - View Rooms function
 def rooms(): 
 # this links to queries into the database     
