@@ -14,10 +14,6 @@ def connect_neo4j():
     database="attendeeNetwork"
     )
 
-
-
-)
-
 #def get_attendee_relationships(tx):
     #query = 
 
@@ -158,3 +154,19 @@ def get_attendee_name(attendee_ID):
     return row["attendeeName"] if row else None
 
 
+
+
+#Choice 6   
+def view_rooms():
+    global conn
+    if conn is None:
+        connect_db()
+
+    query = """
+    SELECT roomName, roomID, capacity FROM room;
+"""
+
+    cursor = conn.cursor()
+    cursor.execute(query)
+    rows = cursor.fetchall()
+    return rows
