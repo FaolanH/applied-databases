@@ -11,7 +11,7 @@ def connect_neo4j():
     driver = GraphDatabase.driver(
     "bolt://localhost:7687",
     auth=("neo4j", "test1234"),
-    database="attendeeNetwork"
+    database="appdbprojNeo4j"
     )
 
 #def get_attendee_relationships(tx):
@@ -133,8 +133,8 @@ def get_attendee_connections(attendee_ID):
         connect_neo4j()
 
     query = """
-    MATCH (a:Attendee {AttendeeID: $id})-[:CONNECTED_TO]->(b:Attendee)
-    RETURN b.AttendeeID AS connectedID
+    MATCH (a:attendee {attendeeID: $id})-[:CONNECTED_TO]->(b:attendee)
+    RETURN b.attendeeID AS connectedID
     """
 
     with driver.session() as session:
