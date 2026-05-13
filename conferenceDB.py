@@ -51,6 +51,8 @@ def get_session(speaker_name):
     return rows
 
 def get_details(company_ID):
+    
+   
     global conn
     if conn is None:
         connect_db()
@@ -87,3 +89,17 @@ WHERE a.attendeeCompanyID LIKE %s;
     cursor.execute(query, ("%" + company_ID + "%",))
     rows = cursor.fetchall()
     return companyName, rows
+    
+   
+def get_attendees(new_record):
+    global conn
+    if conn is None:
+        connect_db()
+
+    query = "SELECT attendeeID FROM attendee WHERE attendeeID LIKE %s";
+
+
+    cursor = conn.cursor()
+    cursor.execute(query, ("%" + new_record + "%",))
+    rows = cursor.fetchall()
+    return rows
