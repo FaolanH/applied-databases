@@ -14,8 +14,10 @@ def main():
           company_ID = input("Enter the company ID of the attendee (or type x to cancel): ")
           if company_ID.lower() == "x":
             return
-
-          attendee_details(company_ID)   
+          attendee_details(company_ID)
+      elif (choice == "3")
+            new_record = input("Add new attendee:")
+            new_attendee(new_record)
 
 def display_menu():
    print ("\n-------------------------------------------------------------------------------")
@@ -47,6 +49,7 @@ def conference_sessions(speaker_name):
 
 def attendee_details(company_ID):
     
+    
         while True:
             if company_ID.lower() == "x":
                 print("\nReturning to main menu.")
@@ -76,6 +79,13 @@ def attendee_details(company_ID):
         print("============")
         for d in details:
             print(f"{d['attendeeName']:^20} |{d['attendeeDOB']} |{d['sessionTitle']:^40} |{d['speakerName']:^20}| Room {d['roomName']:^15} |{d['sessionDate']}")        
-  
+
+def new_attendee(new_record):
+    attendee_ID = int(input("Please enter the new attendee ID:")
+    attendee_name = str(input("Please enter the new attendee name and surname:")
+    attendee_DOB = int(input("Please enter the new attendee date of birth:")
+    attendee_Gender = str(input("Please enter the new attendee sex (M for Male or F for Female or O for Other):")
+    attendee_CompanyID = int(input("Please enter the new attendee Company ID(1-9):")
+ 
 if __name__ == "__main__":
     main()
