@@ -69,7 +69,7 @@ def conference_sessions(speaker_name):
     if not sessions:
         print("\n No speakers found matching: ", speaker_name)
         return
-    # returns list of session based on the user input (dr will return all session where the speaker is a dr.)    
+    # returns a list of sessions based on the user input (for example, dr will return all sessions where the speaker is a dr.)    
     print("\nSESSION LIST OF SPECIFIED SPEAKERS")
     print("============")
     for s in sessions:
@@ -202,12 +202,13 @@ def attendee_connection():
             if not attendee_1_ID.isdigit() or len(attendee_1_ID) != 3:
                 print("Error: Attendee ID must be a 3‑digit number, please try again")
                 return
+            attendee1 = int(attendee_1_ID)    
         except ValueError:
             print("ID must be a number.")
             continue
 
         # checking if the ID is already connected
-        if conferenceDB.show_attendee_connections(attendee_1_ID):
+        if conferenceDB.get_attendee_name(attendee_1_ID):
             print("That attendee ID is already connected. Try again.")
             continue
         break
@@ -219,13 +220,14 @@ def attendee_connection():
             if not attendee_2_ID.isdigit() or len(attendee_2_ID) != 3:
                 print("Error: Attendee ID must be a 3‑digit number, please try again")
                 return
-
+            attendee2 = int(attendee_2_ID)
+       
         except ValueError:
             print("ID must be a number.")
             continue
         
         # checking if the ID is already connected
-        if conferenceDB.show_attendee_connections(attendee_2_ID):
+        if conferenceDB.get_attendee_name(attendee_2_ID):
             print("That attendee ID is already connected. Try again.")
             continue
         break
@@ -233,18 +235,38 @@ def attendee_connection():
     if attendee_1_ID == attendee_2_ID:
         print ("*** ERROR *** An attendee cannot be connected to themselves")
         
+
+
+       # Check SQL
+    if not conferenceDB.get_attendee_name(attendee1):
+        print(f"Attendee {attendee1} does not exist in SQL.")
+        return
+    if not conferenceDB.get_attendee_name(attendee2):
+        print(f"Attendee {attendee2} does not exist in SQL.")
+        return
+
+    # Ensure Neo4j has both nodes
+    if not conferenceDB.neo4j_attendee_exists(attendee1):
+        conferenceDB.create_neo4j_attendee(attendee1)
+
+    if not conferenceDB.neo4j_attendee_exists(attendee2):
+        conferenceDB.create_neo4j_attendee(attendee2)
         
+    # Create the connection
+    conferenceDB.create_connection(attendee1, attendee2)
+    print(f"Connection created between {attendee1} and {attendee2}.")        
+    
 # Choice 6 - View Rooms function
 def rooms(): 
 # this links to queries into the database     
     rooms = conferenceDB.view_rooms()
     
-        # returns list of session based on the user input (dr will return all session where the speaker is a dr.)    
+        # returns list of rooms and capacity where the sessions will take place)    
     print("\nList of Rooms")
     print("============")
+    
     for r in rooms:
         print(f"ID: {r['roomID']} | {r['roomName']} | Capacity: {r['capacity']}")
-    
     
 if __name__ == "__main__":
     main()
