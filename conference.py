@@ -11,7 +11,10 @@ def main():
           speaker_name = input("Enter speaker name or title: ")
           conference_sessions(speaker_name)
       elif (choice == "2"):
-          company_ID = input("Enter the company ID of the attendee: ")
+          company_ID = input("Enter the company ID of the attendee (or type x to cancel): ")
+          if company_ID.lower() == "x":
+            return
+
           attendee_details(company_ID)   
 
 def display_menu():
@@ -44,17 +47,35 @@ def conference_sessions(speaker_name):
 
 def attendee_details(company_ID):
     
-    details = conferenceDB.get_details(company_ID)
-    
-    if not details:
-        print("\n Invalid company ID, please try again:", company_ID)
-        return
-        
-    print("\nATTENDEE DETAILS")
-    print("============")
-    for d in details:
-        print(f"{d['attendeeName']:^20} |{d['attendeeDOB']} |{d['sessionTitle']:^40} |{d['speakerName']:^20}| Room {d['roomName']:^15} |{d['sessionDate']}")        
-  
+        while True:
+            if company_ID.lower() == "x":
+                print("\nReturning to main menu.")
+                return
 
+            companyName, details = conferenceDB.get_details(company_ID)
+
+
+            if companyName is None:
+                print(f"\nCompany ID '{company_ID}' does not exist.")
+                company_ID = input("Enter a valid company ID (or x to cancel): ")
+                continue
+
+        # CASE 2: Company exists but has zero attendees
+            if len(details) == 0:
+                print(f"\nCompany '{companyName}' exists but has no registered attendees.")
+                company_ID = input("Enter another company ID (or x to cancel): ")
+                continue
+            
+            break  
+
+            print(f"\nCompany with an ID of '{companyName}'does not exist, please try again")
+            company_ID = input("Enter the company ID of the attendee (or type x to cancel): ")
+
+        
+        print(f"\n {details[0]['companyName']} ATTENDEE DETAILS")
+        print("============")
+        for d in details:
+            print(f"{d['attendeeName']:^20} |{d['attendeeDOB']} |{d['sessionTitle']:^40} |{d['speakerName']:^20}| Room {d['roomName']:^15} |{d['sessionDate']}")        
+  
 if __name__ == "__main__":
     main()
