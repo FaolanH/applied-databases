@@ -1,4 +1,5 @@
 import conferenceDB
+from datetime import datetime
 
 def main():
     while True:
@@ -15,9 +16,9 @@ def main():
           if company_ID.lower() == "x":
             return
           attendee_details(company_ID)
-      elif (choice == "3")
-            new_record = input("Add new attendee:")
-            new_attendee(new_record)
+      elif (choice == "3"):
+            new_record = print("Please fill in the new attendee details below: ")
+            new_attendee()
 
 def display_menu():
    print ("\n-------------------------------------------------------------------------------")
@@ -39,7 +40,7 @@ def conference_sessions(speaker_name):
     sessions = conferenceDB.get_session(speaker_name)
     
     if not sessions:
-        print("\n No speakers found matching:", speaker_name)
+        print("\n No speakers found matching: ", speaker_name)
         return
         
     print("\nSESSION LIST OF SPECIFIED SPEAKERS")
@@ -79,13 +80,69 @@ def attendee_details(company_ID):
         print("============")
         for d in details:
             print(f"{d['attendeeName']:^20} |{d['attendeeDOB']} |{d['sessionTitle']:^40} |{d['speakerName']:^20}| Room {d['roomName']:^15} |{d['sessionDate']}")        
+ 
+def new_attendee():
+    while True:
+        try:
+            attendee_ID = int(input("Please enter the new attendee ID: "))
+        except ValueError:
+            print("ID must be a number.")
+            continue
 
-def new_attendee(new_record):
-    attendee_ID = int(input("Please enter the new attendee ID:")
-    attendee_name = str(input("Please enter the new attendee name and surname:")
-    attendee_DOB = int(input("Please enter the new attendee date of birth:")
-    attendee_Gender = str(input("Please enter the new attendee sex (M for Male or F for Female or O for Other):")
-    attendee_CompanyID = int(input("Please enter the new attendee Company ID(1-9):")
+        
+        if conferenceDB.get_attendees(attendee_ID):
+            print("That attendee ID already exists. Try again.")
+            continue
+        break
+
+
+    while True:
+        attendee_name = input("Please enter the new attendee name and surname: ").strip()
+        if len(attendee_name.split()) < 2:
+            print("Please enter both first and last name.")
+        else:
+            break
+
+    while True:
+        attendee_DOB = input("Please enter Date of Birth (YYYYMMDD): ").strip()
+
+        try:
+            # Try to parse the date
+            dob_date = datetime.strptime(attendee_DOB, "%Y%m%d").date()
+            break
+        except ValueError:
+            print("Invalid date. Please enter a real date in YYYYMMDD format.")
+
+    # Gender validation
+    while True:
+        attendee_Gender = input("Please enter the new attendee sex (Male or Female): ")
+        if attendee_Gender in ("Male", "Female"):
+            break
+        print("Invalid gender. Enter Male or Female.")
+
+    # Company ID validation
+    while True:
+        try:
+            attendee_CompanyID = int(input("Please enter the new attendee Company ID(1-9): "))
+        except ValueError:
+            print("Company ID must be a number.")
+            continue
+
+        if 1 <= attendee_CompanyID <= 9:
+            break
+        print("Company ID must be between 1 and 9.")
+
+    # Insert into DB
+    conferenceDB.insert_attendee(
+        attendee_ID,
+        attendee_name,
+        dob_date,
+        attendee_Gender,
+        attendee_CompanyID
+    )
+
+    print("\nNew attendee added successfully.")
+
  
 if __name__ == "__main__":
     main()
