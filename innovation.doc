@@ -1,0 +1,10 @@
+To interact with this project, you will need:
+- to open the neo4j database 
+
+There are two well-structured python files in this repository. 
+
+
+References:
+This was very useful in setting up the neo4j connection from python - https://neo4j.com/docs/api/python-driver/current/api.html#
+Co-pilot - using AI top help with errors was great - https://copilot.microsoft.com/shares/GJ6xNKif3vsMrg3Cte337
+Lectures from Gerard Harrison for this module and Andrew Beatty for previous python modules taught me a lot about the structure and methods used throughout this project.
