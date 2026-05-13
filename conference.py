@@ -62,7 +62,7 @@ def display_menu():
 
 # Choice 1 - View Speakers and Sessions function
 def conference_sessions(speaker_name): 
-# this links to queries into the database     
+# this links to queries in the database     
     sessions = conferenceDB.get_session(speaker_name)
     
     # if speaker not found, brings back to main display menu 
@@ -78,13 +78,13 @@ def conference_sessions(speaker_name):
 # Choice 2 - View Attendees by Company function
 def attendee_details(company_ID): 
     
-        # ensuring users have several options to retry inputting company_ID is the first attempt is incorrect
+        # ensuring users have several options to retry inputting company_ID if the first attempt is incorrect
         while True:
                        
             if company_ID.lower() == "x":
                 print("\nReturning to main menu.")
                 return
-# this links to queries into the database
+# this links to queries in the database
             companyName, details = conferenceDB.get_details(company_ID)  
 
             # If there is no such company, they can keep trying
@@ -178,12 +178,15 @@ def new_attendee():
 
 #Choice 4 - View Connected Attendees
 def view_connections(attendee_ID):
+    # seeing the existing connections in the neo4j database
     connections = conferenceDB.get_attendee_connections(attendee_ID)
-
+    
+    # if there are no connections, this will print
     if not connections:
         print(f"\nAttendee {attendee_ID} has no connections.")
         return
-
+    
+    # show the user the connected attendees ID and name
     print("\nCONNECTED ATTENDEES")
     print("====================")
     print(f"{'ID':<10} | Name")
@@ -232,12 +235,11 @@ def attendee_connection():
             continue
         break
         
+    # ensuring the input is not for the same id   
     if attendee_1_ID == attendee_2_ID:
         print ("*** ERROR *** An attendee cannot be connected to themselves")
         
-
-
-       # Check SQL
+       # Checking the appdbproj.sql database to ensure attendee exists
     if not conferenceDB.get_attendee_name(attendee1):
         print(f"Attendee {attendee1} does not exist in SQL.")
         return
@@ -245,7 +247,7 @@ def attendee_connection():
         print(f"Attendee {attendee2} does not exist in SQL.")
         return
 
-    # Ensure Neo4j has both nodes
+    # Ensure Neo4j has both attendees
     if not conferenceDB.neo4j_attendee_exists(attendee1):
         conferenceDB.create_neo4j_attendee(attendee1)
 
@@ -258,10 +260,10 @@ def attendee_connection():
     
 # Choice 6 - View Rooms function
 def rooms(): 
-# this links to queries into the database     
+# this links to queries in the database     
     rooms = conferenceDB.view_rooms()
     
-        # returns list of rooms and capacity where the sessions will take place)    
+        # returns a list of rooms and capacity where the sessions will take place)    
     print("\nList of Rooms")
     print("============")
     
