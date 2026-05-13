@@ -14,9 +14,6 @@ def connect_neo4j():
     database="appdbprojNeo4j"
     )
 
-#def get_attendee_relationships(tx):
-    #query = 
-
 def main():
     connect_neo4j()
     with driver.period() as period:
@@ -31,6 +28,7 @@ def connect_db():
         db="appdbproj",
         cursorclass=pymysql.cursors.DictCursor
     )
+
 #  Choice 1 - View Speakers and Sessions    
 def get_session(speaker_name):
     global conn
@@ -124,9 +122,7 @@ def insert_attendee(attendee_ID, attendee_name, dob_date, attendee_Gender, atten
     cursor.execute(query, (attendee_ID, attendee_name, dob_date, attendee_Gender, attendee_CompanyID))
     conn.commit()
 
-
-# Choice 4 - 
-
+# Choice 4 - View Connected Attendees 
 def get_attendee_connections(attendee_ID):
     global driver
     if driver is None:
@@ -136,7 +132,6 @@ def get_attendee_connections(attendee_ID):
     MATCH (a:attendee {attendeeID: $id})-[:CONNECTED_TO]->(b:attendee)
     RETURN b.attendeeID AS connectedID
     """
-
 
     with driver.session() as session:
         results = session.run(query, id=str(attendee_ID))
@@ -154,10 +149,23 @@ def get_attendee_name(attendee_ID):
 
     return row["attendeeName"] if row else None
 
+# Choice 5 - Add Attendee Connection  
+def show_attendee_connections(attendee_ID):
 
+    global driver
+    if driver is None:
+        connect_neo4j()
 
+    query = """
+    MATCH (a:attendee {attendeeID: $id})-[:CONNECTED_TO]->(b:attendee)
+    RETURN b.attendeeID AS connectedID
+    """
 
-#Choice 6   
+    with driver.session() as session:
+        results = session.run(query, id=str(attendee_ID))
+        return [record["connectedID"] for record in results]
+
+#Choice 6   - View Rooms
 def view_rooms():
     global conn
     if conn is None:
