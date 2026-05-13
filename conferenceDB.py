@@ -91,15 +91,31 @@ WHERE a.attendeeCompanyID LIKE %s;
     return companyName, rows
     
    
-def get_attendees(new_record):
+def get_attendees(attendee_ID):
     global conn
     if conn is None:
         connect_db()
 
-    query = "SELECT attendeeID FROM attendee WHERE attendeeID LIKE %s";
+    query = "SELECT attendeeID FROM attendee WHERE attendeeID = %s";
 
 
     cursor = conn.cursor()
-    cursor.execute(query, ("%" + new_record + "%",))
-    rows = cursor.fetchall()
-    return rows
+    cursor.execute(query, (attendee_ID,))
+    row = cursor.fetchone()
+    return row is not None 
+    
+    
+def insert_attendee(attendee_ID, attendee_name, dob_date, attendee_Gender, attendee_CompanyID):
+    global conn
+    if conn is None:
+        connect_db()
+
+    query = """
+        INSERT INTO attendee (attendeeID, attendeeName, attendeeDOB, attendeeGender, attendeeCompanyID)
+        VALUES (%s, %s, %s, %s, %s)
+    """
+
+    cursor = conn.cursor()
+    cursor.execute(query, (attendee_ID, attendee_name, dob_date, attendee_Gender, attendee_CompanyID))
+    conn.commit()
+    
