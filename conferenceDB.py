@@ -1,10 +1,12 @@
 import pymysql
 from neo4j import GraphDatabase
+import pymysql.cursors
 
 conn = None
 
 driver = None
 
+# All functions below are defined, query either the appdbproj.sql or the appdbprojNeo4h.json databases and return the result.
 def connect_neo4j():
     global driver
     uri = "bolt://localhost:7687"
@@ -122,7 +124,20 @@ def insert_attendee(attendee_ID, attendee_name, dob_date, attendee_Gender, atten
     cursor.execute(query, (attendee_ID, attendee_name, dob_date, attendee_Gender, attendee_CompanyID))
     conn.commit()
 
-# Choice 4 - View Connected Attendees 
+# Choice 4 - View Connected Attendees
+def get_attendee_name(attendee_ID):
+    global conn
+    if conn is None:
+        connect_db()
+
+    query = "SELECT attendeeName FROM attendee WHERE attendeeID = %s"
+    cursor = conn.cursor()
+    cursor.execute(query, (attendee_ID,))
+    row = cursor.fetchone()
+
+    return row["attendeeName"] if row else None
+
+# Choice 4 / 5 - View Connected Attendees and Add Attendee Connection 
 def get_attendee_connections(attendee_ID):
     global driver
     if driver is None:
@@ -137,35 +152,73 @@ def get_attendee_connections(attendee_ID):
         results = session.run(query, id=str(attendee_ID))
         return [record["connectedID"] for record in results]
 
-def get_attendee_name(attendee_ID):
-    global conn
-    if conn is None:
-        connect_db()
-
-    query = "SELECT attendeeName FROM attendee WHERE attendeeID = %s"
-    cursor = conn.cursor()
-    cursor.execute(query, (attendee_ID,))
-    row = cursor.fetchone()
-
-    return row["attendeeName"] if row else None
-
-# Choice 5 - Add Attendee Connection  
-def show_attendee_connections(attendee_ID):
-
+# Choice 5 - Add Attendee Connection       
+def neo4j_attendee_exists(attendee_ID):
     global driver
     if driver is None:
         connect_neo4j()
 
     query = """
-    MATCH (a:attendee {attendeeID: $id})-[:CONNECTED_TO]->(b:attendee)
-    RETURN b.attendeeID AS connectedID
+    MATCH (a:attendee {attendeeID: $id})
+    RETURN a
     """
 
     with driver.session() as session:
-        results = session.run(query, id=str(attendee_ID))
-        return [record["connectedID"] for record in results]
+        result = session.run(query, id=str(attendee_ID))
+        return result.single() is not None
+        
+def create_connection(attendee_1_ID, attendee_2_ID):
+    global driver
+    if driver is None:
+        connect_neo4j()
 
-#Choice 6   - View Rooms
+    query = """
+    MATCH (a:attendee {attendeeID: $attendee1})
+    MATCH (b:attendee {attendeeID: $attendee2})
+    MERGE (a)-[:CONNECTED_TO]->(b)
+    """
+
+    with driver.session() as session:
+        session.run(query, attendee1=str(attendee_1_ID), attendee2=str(attendee_2_ID))
+
+def create_neo4j_attendee(attendee_ID):
+    global driver, conn
+    if driver is None:
+        connect_neo4j()
+    if conn is None:
+        connect_db()
+
+    # Get attendee details from SQL
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+    cursor.execute("SELECT * FROM attendee WHERE attendeeID = %s", (attendee_ID,))
+    row = cursor.fetchone()
+
+    if not row:
+        # This means the attendee does not exist in the SQL database
+        return False  
+
+    query = """
+    MERGE (a:attendee {
+        attendeeID: $id
+    })
+    SET a.attendeename = $name,
+        a.attendeeDOB = $dob,
+        a.attendeeGender = $sex,
+        a.attendeecompanyID = $company
+    """
+
+    with driver.session() as session:
+        session.run(query,
+            id=str(row["attendeeID"]),
+            name=row["attendeeName"],
+            dob=str(row["attendeeDOB"]),
+            sex=row["attendeeGender"],
+            company=str(row["attendeeCompanyID"])
+        )
+
+    return True
+        
+#Choice 6  - View Rooms
 def view_rooms():
     global conn
     if conn is None:
