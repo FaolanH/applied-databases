@@ -26,6 +26,12 @@ def main():
       elif (choice == "3"):
             new_record = print("Please fill in the new attendee details below: ")
             new_attendee()
+      elif (choice == "4"):
+        attendee_ID = input("Please enter attendee ID to view connections: ")
+        if attendee_ID.isdigit():
+            view_connections(int(attendee_ID))
+        else:
+            print("Invalid ID - please try again")     
 
 # Overall Display Menu - what the user sees 
 def display_menu():
@@ -158,7 +164,23 @@ def new_attendee():
     )
 
     print("\nNew attendee added successfully.")
+ #Choice 4 - View Connected Attendees
+def view_connections(attendee_ID):
+    connections = conferenceDB.get_attendee_connections(attendee_ID)
 
- 
+    if not connections:
+        print(f"\nAttendee {attendee_ID} has no connections.")
+        return
+
+    print("\nCONNECTED ATTENDEES")
+    print("====================")
+    print(f"{'ID':<10} | Name")
+    print("-----------------------------")
+
+    for cid in connections:
+        name = conferenceDB.get_attendee_name(cid)
+        print(f"{cid:<10} | {name}")
+
+
 if __name__ == "__main__":
     main()
